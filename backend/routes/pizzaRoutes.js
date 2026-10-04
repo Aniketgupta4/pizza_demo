@@ -1,12 +1,63 @@
 const express = require('express');
 const router = express.Router();
 const Pizza = require('../models/Pizza');
+const { protect, admin } = require('../middleware/authMiddleware');
 
 // Get all pizzas
 router.get('/', async (req, res) => {
     try {
         const pizzas = await Pizza.find({});
         res.json(pizzas);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Admin: add pizza
+router.post('/', protect, admin, async (req, res) => {
+    try {
+        const { name, varients, prices, category, image, description } = req.body;
+
+        if (!name || !varients || !prices || !category || !image || !description) {
+            return res.status(400).json({ message: 'Please provide all pizza details' });
+        }
+
+        const pizza = await Pizza.create({
+            name,
+            varients,
+            prices,
+            category,
+            image,
+            description
+        });
+
+        res.status(201).json(pizza);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Admin: update pizza
+router.put('/:id', protect, admin, async (req, res) => {
+    try {
+        const pizza = await Pizza.findById(req.params.id);
+        if (!pizza) return res.status(404).json({ message: 'Pizza not found' });
+
+        const updatedPizza = await Pizza.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedPizza);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// Admin: delete pizza
+router.delete('/:id', protect, admin, async (req, res) => {
+    try {
+        const pizza = await Pizza.findById(req.params.id);
+        if (!pizza) return res.status(404).json({ message: 'Pizza not found' });
+
+        await pizza.deleteOne();
+        res.json({ message: 'Pizza deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -4,6 +4,8 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import Login from './pages/Login';
+import Profile from './pages/Profile';
+import AdminDashboard from './pages/AdminDashboard';
 import { CartProvider } from './context/CartContext';
 
 function App() {
@@ -18,6 +20,8 @@ function App() {
                             <Route path="/cart" element={<Cart />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Login />} />
+                            <Route path="/profile" element={<Profile />} />
+                            <Route path="/admin" element={<AdminDashboard />} />
                         </Routes>
                     </main>
                     <Footer />
